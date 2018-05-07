@@ -28,13 +28,14 @@ Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
     if (this.x > 505) {
         this.x = - 200 - (Math.floor(Math.random() * 6) + 5) * 100;
-        this.speed = (Math.floor(Math.random() * 6) + 5) * 80 - 100;
+        this.speed = (Math.floor(Math.random() * 6) + 5) * 80 - 150;
     }
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    checkCollesion(this);
 };
 
 // Now write your own player class
@@ -48,7 +49,7 @@ var Player = function () {
     // a helper we've provided to easily load images
     this.sprite = 'images/char-boy.png';
     this.x = 2 * 101; // initial x position
-    this.y = 5 * 83;  // initial y position
+    this.y = 5 * 83 - 20;  // initial y position
 };
 
 // Update the players's position, required method for game
@@ -71,7 +72,7 @@ Player.prototype.update = function (keyValue) {
             }
             break;
         case 'down':
-            if (this.y < 415) {
+            if (this.y < 395) {
                 this.y += 83;
             }
             break;
@@ -85,30 +86,31 @@ Player.prototype.update = function (keyValue) {
 Player.prototype.handleInput = function (keyValue) {
     // update player if key is in allowedKeys
     if (keyValue && !gameCompleted) this.update(keyValue);
+
 };
 
 // Draw the [player] on the screen, required method for game
 Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    if (this.y === 0 && !gameCompleted) {
+    if ((this.y === - 20) && !gameCompleted) {
         gameComplete();
         gameCompleted = true;
     }
-    checkCollesion(this);
+
 };
 
 // Now instantiate your objects. 
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var allEnemies = [];
-allEnemies.push(new Enemy(- 200 - Math.random() * 200, 1 * 83 - 25));
-allEnemies.push(new Enemy(- 200 - Math.random() * 200, 1 * 83 - 25));
+allEnemies.push(new Enemy(- 200 - Math.random() * 200, 1 * 83 - 20));
+allEnemies.push(new Enemy(- 200 - Math.random() * 200, 1 * 83 - 20));
 
-allEnemies.push(new Enemy(- 200 - Math.random() * 200, 2 * 83 - 25));
-allEnemies.push(new Enemy(- 200 - Math.random() * 200, 2 * 83 - 25));
+allEnemies.push(new Enemy(- 200 - Math.random() * 200, 2 * 83 - 20));
+allEnemies.push(new Enemy(- 200 - Math.random() * 200, 2 * 83 - 20));
 
-allEnemies.push(new Enemy(- 200 - Math.random() * 200, 3 * 83 - 25));
-allEnemies.push(new Enemy(- 200 - Math.random() * 200, 3 * 83 - 25));
+allEnemies.push(new Enemy(- 200 - Math.random() * 200, 3 * 83 - 20));
+allEnemies.push(new Enemy(- 200 - Math.random() * 200, 3 * 83 - 20));
 
 var player = new Player();
 
@@ -133,14 +135,15 @@ function countTime() {
     }   
 }
 
-// this function hamdles game restart
+// this function handles game restart by setting the proper values for player object 
+// and for other variables
 function restartGame() {
     time = 0; 
     player.x = 2 * 101; // initial x position
-    player.y = 5 * 83;  // initial y position
+    player.y = 5 * 83 - 20;  // initial y position
     gameCompleted =false;
     gameStatus[0].innerHTML = '';
-    timer[0].innerText = '';
+    timer[0].innerText = '0:0';
 }
 
 // this function handles game complete 
@@ -148,6 +151,7 @@ function gameComplete() {
     let msg = 'Congratulations! Youn won in ' + timer[0].innerText + 'm:s';
     msg += '\nclick Restart to play a new game.' 
     gameStatus[0].innerText = msg;
+    gameCompleted = true;
 
 }
 
@@ -156,5 +160,11 @@ function gameComplete() {
 //the collision test simply by checking overlap of player image and enemy image.
 //it takes enemy object as argument and apply the check with the player object.
 function checkCollesion(enemy) {
+    if (enemy.y == player.y) {
+        if (enemy.x >= player.x && enemy.x <= player.x + 80) {
+            restartGame();
+        }
+    }
+    
     
 }
