@@ -1,4 +1,12 @@
 // Enemies our player must avoid
+const timer = document.getElementsByClassName('timer');
+let time = 0;
+let interval = setInterval(countTime, 1000);
+let gameCompleted = false;
+const restart = document.getElementsByClassName('restart');
+const gameStatus = document.getElementsByClassName('gamestatus');
+
+restart[0].addEventListener('click', restartGame);
 var Enemy = function(x, y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -44,9 +52,9 @@ var Player = function () {
 };
 
 // Update the players's position, required method for game
-// Parameter: dt, a time delta between ticks
-Player.prototype.update = function (key) {
-    switch (key) {
+// Parameter: key value
+Player.prototype.update = function (keyValue) {
+    switch (keyValue) {
         case 'left':
             if (this.x > 0) {
                 this.x -= 101;
@@ -70,17 +78,23 @@ Player.prototype.update = function (key) {
         default:
             break;
     }
+
 };
 
 //handles user inputs
-Player.prototype.handleInput = function (key) {
+Player.prototype.handleInput = function (keyValue) {
     // update player if key is in allowedKeys
-    if (key) this.update(key);
+    if (keyValue && !gameCompleted) this.update(keyValue);
 };
 
 // Draw the [player] on the screen, required method for game
 Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (this.y === 0 && !gameCompleted) {
+        gameComplete();
+        gameCompleted = true;
+    }
+    checkCollesion(this);
 };
 
 // Now instantiate your objects. 
@@ -110,3 +124,37 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+// this function updates the game timer
+function countTime() {
+    if (!gameCompleted) {
+        time++;
+    timer[0].innerText = parseInt(time / 60) + ':' + (time % 60);
+    }   
+}
+
+// this function hamdles game restart
+function restartGame() {
+    time = 0; 
+    player.x = 2 * 101; // initial x position
+    player.y = 5 * 83;  // initial y position
+    gameCompleted =false;
+    gameStatus[0].innerHTML = '';
+    timer[0].innerText = '';
+}
+
+// this function handles game complete 
+function gameComplete() {
+    let msg = 'Congratulations! Youn won in ' + timer[0].innerText + 'm:s';
+    msg += '\nclick Restart to play a new game.' 
+    gameStatus[0].innerText = msg;
+
+}
+
+// this function checks the collision between player and enemy.
+// if collesion is detected, the game will be reset.
+//the collision test simply by checking overlap of player image and enemy image.
+//it takes enemy object as argument and apply the check with the player object.
+function checkCollesion(enemy) {
+    
+}
