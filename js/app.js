@@ -161,7 +161,7 @@ function gameComplete() {
 //it takes enemy object as argument and apply the check with the player object.
 function checkCollesion(enemy) {
     if (enemy.y == player.y) {
-        if (enemy.x >= player.x && enemy.x <= player.x + 80) {
+        if (((enemy.x + 70) >= player.x) && ((enemy.x + 70) <= player.x + 100)) {
             restartGame();
         }
     }
